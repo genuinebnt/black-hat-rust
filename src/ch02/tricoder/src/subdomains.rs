@@ -24,16 +24,6 @@ impl Display for Response {
     }
 }
 
-impl Display for Vec<Response> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let pretty_print: Vec<String> = self
-            .iter()
-            .map(|response| format!("{:}", response))
-            .collect();
-        write!(f, "{:?}", pretty_print)
-    }
-}
-
 type Subdomaion = String;
 type CrtShEntry = String;
 
@@ -43,6 +33,9 @@ pub fn enumerate(http_client: &Client, target: &str) -> Result<(), Error> {
         .send()?
         .json()?;
 
-    println!("{:}", entries);
+    entries.into_iter().for_each(|resp| {
+        println!("{:}", resp);
+    });
+
     Ok(())
 }
