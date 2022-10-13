@@ -6,6 +6,7 @@ mod subdomains;
 
 fn main() -> Result<(), Error> {
     let client = Client::new();
-    let _ = subdomains::enumerate(&client, "kerkour.com")?;
+    let subdomains = subdomains::enumerate(&client, "kerkour.com")?;
+    print!("{:}", subdomains);
     Ok(())
 }
