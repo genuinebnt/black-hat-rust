@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::ops::Deref;
 
 use reqwest::blocking::Client;
 use reqwest::Error;
@@ -6,21 +7,13 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 struct CrtShEntry {
-    issuer_ca_id: i64,
-    issuer_name: String,
-    common_name: String,
     name_value: String,
-    id: i64,
-    entry_timestamp: String,
-    not_before: String,
-    not_after: String,
-    serial_number: String,
 }
 
 #[derive(Debug)]
 pub struct Subdomain {
-    domain: String,
-    open_ports: Vec<i32>,
+    pub domain: String,
+    pub open_ports: Vec<i32>,
 }
 
 impl std::fmt::Display for Subdomain {
@@ -40,6 +33,14 @@ impl std::fmt::Display for Subdomain {
 
 pub struct Subdomains(Vec<Subdomain>);
 
+impl Deref for Subdomains {
+    type Target = Vec<Subdomain>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 impl From<Vec<Subdomain>> for Subdomains {
     fn from(value: Vec<Subdomain>) -> Self {
         Subdomains(value)
@@ -48,7 +49,7 @@ impl From<Vec<Subdomain>> for Subdomains {
 
 impl std::fmt::Display for Subdomains {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0.iter().fold(Ok(()), |result, domain| {
+        self.iter().fold(Ok(()), |result, domain| {
             result.and_then(|_| write!(f, "{}", domain))
         })
     }

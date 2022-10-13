@@ -3,6 +3,7 @@ use reqwest::blocking::Client;
 
 mod error;
 mod subdomains;
+mod ports;
 
 fn main() -> Result<(), Error> {
     let client = Client::new();
