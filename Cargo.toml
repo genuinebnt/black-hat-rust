@@ -8,11 +8,11 @@ edition = "2021"
 [[bin]]
 name = "sha1_cracker"
 version = "0.1.0"
-path = "src/ch01/sha1_cracker.rs"
+path = "src/ch01/sha1_cracker/main.rs"
 
 [[bin]]
 name = "tricoder"
-path = "src/ch02/tricoder/src/main.rs"
+path = "src/ch02/tricoder/main.rs"
 
 [dependencies]
 anyhow = "1.0.65"
