@@ -22,7 +22,7 @@ fn main() -> Result<()> {
 
     let valid_subdomains: Vec<Option<String>> = wordlist
         .into_par_iter()
-        .map(|word| subdomain::enumerate(&http_client, &format!("{}.{}", word, target)))
+        .map(|word| subdomain::enumerate(&http_client, &format!("https://{}.{}", word, target)))
         .collect();
 
     println!("{:?}", valid_subdomains);

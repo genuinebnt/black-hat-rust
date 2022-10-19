@@ -17,14 +17,19 @@ pub struct Subdomain {
 
 pub fn enumerate(http_client: &Client, target: &str) -> Option<String> {
     let resp = http_client.get(target).send();
+    println!("{}", target);
     match resp {
         Ok(resp) => {
             if resp.status().is_success() {
                 Some(target.to_owned())
             } else {
-                None
+                println!("{}", resp.status());
+                return None;
             }
         }
-        Err(_e) => None,
+        Err(e) => {
+            println!("{}", e);
+            return None;
+        }
     }
 }
