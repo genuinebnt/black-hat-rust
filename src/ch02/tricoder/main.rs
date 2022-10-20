@@ -3,10 +3,12 @@ use rayon::prelude::*;
 use reqwest::blocking::Client;
 use std::fs;
 use std::time::Duration;
-use subdomain::Subdomain;
 
 mod common_ports;
 mod subdomain;
+mod ports;
+
+use ports::Subdomain;
 
 fn main() -> Result<()> {
     let wordlist: Vec<String> = fs::read_to_string("input/subdomains_wordlist.txt")?
@@ -18,14 +20,18 @@ fn main() -> Result<()> {
     let target = "google.com";
 
     let http_client = Client::builder().timeout(Duration::from_secs(10)).build()?;
-    let _ = rayon::ThreadPoolBuilder::new().num_threads(256).build()?;
+    let pool = rayon::ThreadPoolBuilder::new().num_threads(256).build()?;
 
-    let valid_subdomains: Vec<Option<String>> = wordlist
-        .into_par_iter()
-        .map(|word| subdomain::enumerate(&http_client, &format!("https://{}.{}", word, target)))
-        .collect();
+    pool.install(|| {
+        let valid_subdomains: Vec<String> = wordlist
+            .into_par_iter()
+            .map(|word| format!("https://{}.{}", word, target))
+            .filter(|target| subdomain::enumerate(&http_client, target))
+            .collect();
 
-    println!("{:?}", valid_subdomains);
+        println!("{:?}", valid_subdomains);
+    });
+
     Ok(())
 }
 
