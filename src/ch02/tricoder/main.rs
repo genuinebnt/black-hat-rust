@@ -5,8 +5,10 @@ use std::fs;
 use std::time::Duration;
 
 mod common_ports;
-mod subdomain;
 mod ports;
+mod subdomain;
+
+use common_ports::MOST_COMMON_PORTS_100;
 
 use ports::Subdomain;
 
@@ -25,11 +27,16 @@ fn main() -> Result<()> {
     pool.install(|| {
         let valid_subdomains: Vec<String> = wordlist
             .into_par_iter()
-            .map(|word| format!("https://{}.{}", word, target))
+            .map(|word| format!("{}.{}", word, target))
             .filter(|target| subdomain::enumerate(&http_client, target))
             .collect();
 
-        println!("{:?}", valid_subdomains);
+        let results: Vec<Subdomain> = valid_subdomains
+            .into_par_iter()
+            .map(|subdomain| ports::scan_ports(subdomain, MOST_COMMON_PORTS_100))
+            .collect();
+
+        println!("{:?}", results);
     });
 
     Ok(())
